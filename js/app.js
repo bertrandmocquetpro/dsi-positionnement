@@ -5,7 +5,38 @@ const AXES = {
   CG: "Conduite de projet",
   QP: "Qualités personnelles"
 };
-
+const AXES_DESCRIPTIONS = {
+  C: {
+    title: "Connaissances",
+    referentiel: "C1 à C6",
+    description:
+      "Capacité à comprendre l’environnement institutionnel de l’enseignement supérieur et de la recherche, les enjeux stratégiques, réglementaires, budgétaires et organisationnels liés au numérique."
+  },
+  CM: {
+    title: "Management",
+    referentiel: "CM1 à CM4",
+    description:
+      "Capacité à organiser, animer, accompagner et faire évoluer les équipes de la DSI dans un contexte de transformation, de tension sur les compétences et de coopération avec les métiers."
+  },
+  CT: {
+    title: "Technique",
+    referentiel: "CT1 à CT6",
+    description:
+      "Capacité à piloter les architectures, infrastructures, applications, données, interopérabilité, sécurité, accessibilité et continuité de service du système d’information."
+  },
+  CG: {
+    title: "Conduite de projet",
+    referentiel: "CG1 à CG3",
+    description:
+      "Capacité à piloter des projets numériques complexes, à organiser la gouvernance, à arbitrer les priorités, à gérer les risques et à conduire le changement."
+  },
+  QP: {
+    title: "Qualités personnelles",
+    referentiel: "QP1 à QP10",
+    description:
+      "Capacité à adopter une posture professionnelle adaptée : discernement, écoute, communication, résistance au stress, sens politique, responsabilité et capacité à apprendre."
+  }
+};
 let currentQuestion = 0;
 let answers = {};
 let radarChart = null;
