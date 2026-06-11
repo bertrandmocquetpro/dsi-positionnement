@@ -203,35 +203,21 @@ function renderDetails(scores) {
           <th>Domaine</th>
           <th>Référentiel</th>
           <th>Score</th>
+          <th>Lecture du résultat</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Connaissances</td>
-          <td>C1 à C6</td>
-          <td>${scores.C}%</td>
-        </tr>
-        <tr>
-          <td>Management</td>
-          <td>CM1 à CM4</td>
-          <td>${scores.CM}%</td>
-        </tr>
-        <tr>
-          <td>Technique</td>
-          <td>CT1 à CT6</td>
-          <td>${scores.CT}%</td>
-        </tr>
-        <tr>
-          <td>Conduite de projet</td>
-          <td>CG1 à CG3</td>
-          <td>${scores.CG}%</td>
-        </tr>
-        <tr>
-          <td>Qualités personnelles</td>
-          <td>QP1 à QP10</td>
-          <td>${scores.QP}%</td>
-        </tr>
+        ${Object.keys(AXES_DESCRIPTIONS).map(axis => `
+          <tr>
+            <td><strong>${AXES_DESCRIPTIONS[axis].title}</strong></td>
+            <td>${AXES_DESCRIPTIONS[axis].referentiel}</td>
+            <td>${scores[axis]}%</td>
+            <td>${AXES_DESCRIPTIONS[axis].description}</td>
+          </tr>
+        `).join("")}
       </tbody>
     </table>
+  `;
+}
   `;
 }
