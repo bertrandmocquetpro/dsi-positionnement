@@ -1,80 +1,21 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Auto-positionnement DSI-DSIN ESR</title>
-  <link rel="stylesheet" href="css/style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-  <header class="hero">
-    <div>
-      <p class="eyebrow">Référentiel DSI-DSIN</p>
-      <h1>Test d’auto-positionnement professionnel</h1>
-      <p class="lead">30 situations contextualisées dans l’enseignement supérieur et la recherche pour situer vos compétences de direction du numérique.</p>
-    </div>
-    <div class="hero-card">
-      <strong>Axes évalués</strong>
-      <span>Connaissance ESR · Management · Expertise SI · Pilotage · Leadership · Soft skills</span>
-    </div>
-  </header>
+<section class="intro-card">
+  <h2>Référentiel DSI-DSIN</h2>
 
-  <main class="container">
-    <section id="intro" class="panel">
-      <h2>Avant de commencer</h2>
-      <p>Chaque question décrit une situation professionnelle de DSI/DSIN. Choisissez la réponse qui correspond le mieux à votre réaction spontanée. Ce test n’est pas certificatif : il sert à objectiver un positionnement, à préparer un entretien professionnel ou à construire un parcours de formation.</p>
-      <div class="form-grid">
-        <label>Nom ou pseudonyme <input id="userName" placeholder="Facultatif" /></label>
-        <label>Contexte <input id="userContext" placeholder="Université, école, organisme…" /></label>
-      </div>
-      <button id="startBtn" class="primary">Commencer le test</button>
-    </section>
+  <p>
+    Ce test s’appuie sur le référentiel national du
+    <strong>directeur du système d’information et numérique des établissements de l’enseignement supérieur et de recherche</strong>.
+    Ce référentiel propose un cadre partagé des missions, compétences, connaissances et qualités attendues des DSI-DSIN.
+  </p>
 
-    <section id="quiz" class="panel hidden">
-      <div class="quiz-top">
-        <div>
-          <p id="progressText" class="eyebrow"></p>
-          <h2 id="questionTitle"></h2>
-        </div>
-        <div class="progress"><div id="progressBar"></div></div>
-      </div>
-      <p id="questionText" class="scenario"></p>
-      <div id="answers" class="answers"></div>
-      <div class="nav">
-        <button id="prevBtn" class="secondary">Précédent</button>
-        <button id="nextBtn" class="primary">Suivant</button>
-      </div>
-    </section>
+  <p>
+    L’outil sert à <strong>objectiver un positionnement</strong> et à
+    <strong>construire un parcours de formation</strong>.
+  </p>
 
-    <section id="results" class="panel hidden">
-      <div class="results-head">
-        <div>
-          <p class="eyebrow">Résultats</p>
-          <h2 id="profileTitle"></h2>
-          <p id="profileSummary"></p>
-        </div>
-        <div class="score-badge"><span id="globalScore">0</span>%</div>
-      </div>
-      <div class="results-grid">
-        <div class="chart-wrap"><canvas id="radarChart"></canvas></div>
-        <div id="recommendations" class="recommendations"></div>
-      </div>
-      <h3>Détail par axe</h3>
-      <div id="axisDetails" class="axis-details"></div>
-      <div class="actions">
-        <button id="pdfBtn" class="primary">Exporter en PDF</button>
-        <button id="csvBtn" class="secondary">Exporter en CSV</button>
-        <button id="jsonBtn" class="secondary">Exporter en JSON</button>
-        <button id="restartBtn" class="secondary">Recommencer</button>
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    Prototype pédagogique autonome, hébergeable sur GitHub Pages. Données conservées uniquement dans le navigateur, sauf export volontaire.
-  </footer>
-  <script src="js/app.js"></script>
-</body>
-</html>
+  <p class="source">
+    Source :
+    <a href="https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF" target="_blank">
+      Référentiel DSI-DSIN — DGESIP / MESRI
+    </a>
+  </p>
+</section>
