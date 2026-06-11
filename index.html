@@ -1,21 +1,170 @@
-<section class="intro-card">
-  <h2>Référentiel DSI-DSIN</h2>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positionnement DSI-DSIN</title>
 
-  <p>
-    Ce test s’appuie sur le référentiel national du
-    <strong>directeur du système d’information et numérique des établissements de l’enseignement supérieur et de recherche</strong>.
-    Ce référentiel propose un cadre partagé des missions, compétences, connaissances et qualités attendues des DSI-DSIN.
-  </p>
+    <link rel="stylesheet" href="css/style.css">
 
-  <p>
-    L’outil sert à <strong>objectiver un positionnement</strong> et à
-    <strong>construire un parcours de formation</strong>.
-  </p>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
-  <p class="source">
-    Source :
-    <a href="https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF" target="_blank">
-      Référentiel DSI-DSIN — DGESIP / MESRI
-    </a>
-  </p>
-</section>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Test de positionnement DSI-DSIN</h1>
+        <p>
+            Auto-évaluation fondée sur le référentiel national des directeurs
+            des systèmes d'information et du numérique de l'enseignement supérieur.
+        </p>
+    </header>
+
+    <section class="intro-card">
+
+        <h2>Présentation du référentiel</h2>
+
+        <p>
+            Le référentiel DSI-DSIN constitue un cadre commun de description
+            des compétences attendues des directeurs des systèmes d'information
+            et du numérique dans les établissements d'enseignement supérieur
+            et de recherche.
+        </p>
+
+        <p>
+            Il couvre cinq grandes dimensions :
+        </p>
+
+        <ul>
+            <li><strong>C</strong> : Connaissances</li>
+            <li><strong>CM</strong> : Management</li>
+            <li><strong>CT</strong> : Compétences techniques</li>
+            <li><strong>CG</strong> : Conduite de projet et gouvernance</li>
+            <li><strong>QP</strong> : Qualités personnelles</li>
+        </ul>
+
+        <p>
+            Cet outil sert à :
+        </p>
+
+        <ul>
+            <li>objectiver un positionnement professionnel ;</li>
+            <li>identifier des points forts et des axes de progression ;</li>
+            <li>construire un parcours de formation ;</li>
+            <li>alimenter une réflexion sur son développement professionnel.</li>
+        </ul>
+
+        <p class="source">
+            Source :
+            <a href="https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF"
+               target="_blank">
+                Référentiel DSI-DSIN (DGESIP)
+            </a>
+        </p>
+
+        <button id="startBtn" class="primary-btn">
+            Commencer le test
+        </button>
+
+    </section>
+
+    <section id="testSection">
+
+        <div id="progressContainer">
+            <span id="progressText"></span>
+        </div>
+
+        <div id="questionContainer"></div>
+
+        <div class="navigation">
+
+            <button id="prevBtn" class="secondary-btn">
+                Précédent
+            </button>
+
+            <button id="nextBtn" class="primary-btn">
+                Suivant
+            </button>
+
+        </div>
+
+    </section>
+
+    <section id="resultsSection" style="display:none;">
+
+        <h2>Résultats</h2>
+
+        <p>
+            Les résultats représentent votre positionnement relatif sur les
+            cinq dimensions du référentiel DSI-DSIN.
+        </p>
+
+        <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+        </div>
+
+        <h3>Détail des résultats</h3>
+
+        <div id="detailTable"></div>
+
+        <h3>Interprétation des domaines</h3>
+
+        <div class="domaines">
+
+            <div class="domaine-card">
+                <h4>Connaissances (C1 à C6)</h4>
+                <p>
+                    Compréhension de l'environnement ESR, des enjeux
+                    institutionnels, réglementaires, financiers et stratégiques.
+                </p>
+            </div>
+
+            <div class="domaine-card">
+                <h4>Management (CM1 à CM4)</h4>
+                <p>
+                    Animation des équipes, développement des compétences,
+                    organisation et accompagnement du changement.
+                </p>
+            </div>
+
+            <div class="domaine-card">
+                <h4>Technique (CT1 à CT6)</h4>
+                <p>
+                    Pilotage des infrastructures, applications, architectures,
+                    données, sécurité et accessibilité.
+                </p>
+            </div>
+
+            <div class="domaine-card">
+                <h4>Conduite de projet (CG1 à CG3)</h4>
+                <p>
+                    Gouvernance, pilotage de portefeuille, conduite du changement
+                    et gestion des parties prenantes.
+                </p>
+            </div>
+
+            <div class="domaine-card">
+                <h4>Qualités personnelles (QP1 à QP10)</h4>
+                <p>
+                    Leadership, communication, discernement, résilience,
+                    sens politique et capacité d'adaptation.
+                </p>
+            </div>
+
+        </div>
+
+        <button onclick="location.reload()" class="primary-btn">
+            Recommencer le test
+        </button>
+
+    </section>
+
+</div>
+
+<script src="js/questions.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
