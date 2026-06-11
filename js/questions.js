@@ -1,152 +1,367 @@
-const questions = [
-{title:"Schéma directeur numérique", text:"La présidence vous demande de produire en six semaines une trajectoire numérique pour le prochain contrat quinquennal.", answers:[
-{text:"Organiser un cadrage stratégique associant gouvernance, métiers, usagers, SI et soutenabilité.", score:{knowledge:3,project:3,leadership:2,soft:1}},
-{text:"Compiler les demandes techniques déjà exprimées par les services.", score:{expertise:2,project:1}},
-{text:"Externaliser entièrement la rédaction à un cabinet.", score:{project:1}},
-{text:"Présenter une liste d’outils innovants à déployer rapidement.", score:{expertise:1,leadership:1}}]},
-{title:"Cybersécurité", text:"Une composante signale une suspicion de compromission sur plusieurs comptes enseignants.", answers:[
-{text:"Activer la cellule de crise, qualifier l’incident, sécuriser les accès, informer selon les obligations et documenter.", score:{expertise:4,project:2,management:1,soft:1}},
-{text:"Demander aux utilisateurs de changer leur mot de passe sans autre action.", score:{expertise:1}},
-{text:"Attendre confirmation complète avant toute communication.", score:{expertise:1,soft:1}},
-{text:"Couper tous les services numériques de l’établissement.", score:{expertise:1,project:1}}]},
-{title:"Cloud souverain", text:"Un vice-président souhaite migrer des applications sensibles vers une solution cloud.", answers:[
-{text:"Analyser données, risques, coûts, dépendances, réversibilité, sécurité et cadre de marché avant arbitrage.", score:{knowledge:2,expertise:3,project:2,leadership:1}},
-{text:"Choisir l’offre la moins chère.", score:{knowledge:1}},
-{text:"Refuser par principe toute solution cloud.", score:{expertise:1}},
-{text:"Demander aux équipes systèmes de décider seules.", score:{management:1,expertise:1}}]},
-{title:"Budget contraint", text:"Votre budget d’investissement baisse alors que les besoins de modernisation augmentent.", answers:[
-{text:"Prioriser par risques, valeur métier, dette technique et soutenabilité, puis expliciter les arbitrages.", score:{knowledge:3,project:3,leadership:2,soft:1}},
-{text:"Répartir la baisse uniformément sur tous les projets.", score:{project:1}},
-{text:"Supprimer les formations des agents pour préserver les achats.", score:{management:0}},
-{text:"Reporter toutes les décisions à l’année suivante.", score:{}}]},
-{title:"Qualité de service", text:"Les usagers critiquent la lenteur du support numérique lors des rentrées universitaires.", answers:[
-{text:"Mettre en place indicateurs, analyse des flux, base de connaissances, renforts saisonniers et amélioration continue.", score:{expertise:2,management:2,project:3,soft:2}},
-{text:"Rappeler que les usagers doivent être patients.", score:{soft:0}},
-{text:"Acheter un nouvel outil sans revoir l’organisation.", score:{expertise:1}},
-{text:"Augmenter uniquement le nombre de tickets obligatoires.", score:{project:1}}]},
-{title:"ERP scolarité", text:"Le déploiement d’un nouvel outil de scolarité crée des tensions entre composantes et services centraux.", answers:[
-{text:"Structurer une gouvernance métier-SI, traiter les irritants, expliciter les arbitrages et accompagner les usages.", score:{knowledge:2,project:3,management:2,soft:3}},
-{text:"Imposer le paramétrage standard sans discussion.", score:{project:1}},
-{text:"Laisser chaque composante adapter localement l’outil.", score:{soft:1}},
-{text:"Reporter le projet à cause des tensions.", score:{}}]},
-{title:"Management d’équipe", text:"Deux responsables techniques expérimentés s’opposent sur l’architecture cible.", answers:[
-{text:"Faire expliciter hypothèses, critères, risques et coûts, puis arbitrer de manière documentée.", score:{management:3,expertise:2,soft:3,leadership:2}},
-{text:"Choisir l’avis du plus ancien.", score:{management:1}},
-{text:"Demander au prestataire de décider.", score:{expertise:1}},
-{text:"Éviter le sujet jusqu’à obtention d’un consensus spontané.", score:{soft:1}}]},
-{title:"Communication", text:"Le conseil d’administration vous demande d’expliquer un projet d’urbanisation du SI.", answers:[
-{text:"Traduire les enjeux en impacts métiers, risques, trajectoire financière et bénéfices usagers.", score:{expertise:2,knowledge:2,leadership:2,soft:3}},
-{text:"Présenter exclusivement les couches techniques.", score:{expertise:2}},
-{text:"Éviter les limites du projet pour rassurer.", score:{soft:0}},
-{text:"Demander au RSSI de présenter seul.", score:{management:1}}]},
-{title:"Données et pilotage", text:"La direction souhaite fiabiliser des indicateurs de réussite étudiante.", answers:[
-{text:"Construire une gouvernance des données, clarifier les définitions, les sources, la qualité et les responsabilités.", score:{knowledge:3,expertise:2,project:2,leadership:1}},
-{text:"Extraire rapidement les données disponibles sans cadrage.", score:{expertise:1}},
-{text:"Déléguer entièrement au service statistique.", score:{knowledge:1}},
-{text:"Attendre un outil national parfait.", score:{}}]},
-{title:"Marché public", text:"Un besoin urgent de prestation numérique apparaît en cours d’année.", answers:[
-{text:"Qualifier le besoin, vérifier les procédures, sécuriser le sourcing et articuler urgence, conformité et performance achat.", score:{knowledge:4,project:2,soft:1}},
-{text:"Demander un devis et lancer immédiatement la commande.", score:{knowledge:0}},
-{text:"Contourner le besoin en mobilisant uniquement l’interne, même sans compétence.", score:{management:1}},
-{text:"Reporter systématiquement au prochain budget.", score:{}}]},
-{title:"Accessibilité numérique", text:"Un audit révèle que plusieurs services en ligne ne respectent pas suffisamment l’accessibilité.", answers:[
-{text:"Prioriser les corrections, intégrer l’accessibilité au cycle projet, former les équipes et publier une trajectoire.", score:{knowledge:2,expertise:2,project:3,management:2}},
-{text:"Traiter seulement les pages les plus visibles.", score:{project:1}},
-{text:"Considérer que le sujet relève uniquement de la communication.", score:{knowledge:0}},
-{text:"Acheter un plugin correctif sans changement de méthode.", score:{expertise:1}}]},
-{title:"Conduite du changement", text:"Un projet d’espace numérique de travail modernisé rencontre une faible adoption.", answers:[
-{text:"Analyser les usages, segmenter les publics, mobiliser relais, formation, communication et mesure d’adoption.", score:{project:3,soft:3,management:2,leadership:1}},
-{text:"Envoyer une note de service imposant l’usage.", score:{leadership:1}},
-{text:"Ajouter davantage de fonctionnalités.", score:{expertise:1}},
-{text:"Conclure que les usagers sont réfractaires.", score:{soft:0}}]},
-{title:"Innovation EdTech", text:"Une EdTech propose une solution IA prometteuse pour l’aide à la réussite.", answers:[
-{text:"Évaluer preuves, RGPD, souveraineté, modèle économique, interopérabilité, biais et expérimentation contrôlée.", score:{knowledge:3,expertise:2,leadership:2,project:2}},
-{text:"Signer rapidement pour être innovant.", score:{leadership:1}},
-{text:"Refuser toute IA par prudence.", score:{knowledge:1}},
-{text:"Laisser chaque enseignant décider localement.", score:{soft:1}}]},
-{title:"Dette technique", text:"Les équipes alertent sur une dette technique invisible pour la gouvernance.", answers:[
-{text:"Objectiver les risques, construire une cartographie, relier dette et continuité de service, puis proposer un plan pluriannuel.", score:{expertise:3,project:3,leadership:2,soft:1}},
-{text:"Attendre qu’une panne rende le problème visible.", score:{}},
-{text:"Communiquer uniquement sur le coût de résorption.", score:{knowledge:1}},
-{text:"Changer toute l’architecture immédiatement.", score:{expertise:1}}]},
-{title:"Compétences internes", text:"La direction numérique peine à recruter et à fidéliser sur certains profils techniques.", answers:[
-{text:"Travailler GPEEC, parcours, attractivité, formation, reconnaissance, mutualisation et organisation du travail.", score:{management:4,knowledge:2,leadership:2,soft:2}},
-{text:"Multiplier les prestataires sans stratégie de transfert.", score:{project:1}},
-{text:"Réduire les exigences de recrutement.", score:{management:1}},
-{text:"Attendre une amélioration du marché de l’emploi.", score:{}}]},
-{title:"Relations nationales", text:"Un programme national SI impacte fortement votre trajectoire locale.", answers:[
-{text:"Analyser les dépendances, participer aux communautés, articuler mutualisation nationale et contraintes locales.", score:{knowledge:3,expertise:2,project:2,soft:2}},
-{text:"Ignorer le programme jusqu’à obligation formelle.", score:{}},
-{text:"Appliquer sans contextualisation locale.", score:{knowledge:1}},
-{text:"Le présenter comme une contrainte exclusivement externe.", score:{soft:0}}]},
-{title:"RSE numérique", text:"L’établissement veut réduire l’empreinte environnementale de son numérique.", answers:[
-{text:"Mesurer, prioriser équipements/services, travailler achats, usages, cycle de vie, données et indicateurs.", score:{knowledge:2,expertise:2,project:3,leadership:2}},
-{text:"Limiter l’action à l’extinction des écrans.", score:{project:1}},
-{text:"Communiquer sans mesure.", score:{soft:1}},
-{text:"Reporter car ce n’est pas une priorité SI.", score:{}}]},
-{title:"Négociation", text:"Une composante exige un développement spécifique incompatible avec la trajectoire d’urbanisation.", answers:[
-{text:"Écouter le besoin, distinguer besoin et solution, proposer alternatives, coûts complets et arbitrage gouverné.", score:{soft:4,expertise:2,project:2,leadership:1}},
-{text:"Refuser sans discussion.", score:{leadership:1}},
-{text:"Accepter pour éviter le conflit.", score:{soft:1}},
-{text:"Transférer la décision au prestataire.", score:{}}]},
-{title:"Crise de continuité", text:"Une panne majeure affecte les inscriptions administratives en pleine période critique.", answers:[
-{text:"Piloter crise, priorités de rétablissement, communication, contournements, retour d’expérience et plan d’amélioration.", score:{expertise:3,project:3,management:2,soft:2}},
-{text:"Chercher d’abord le responsable individuel.", score:{management:0}},
-{text:"Communiquer seulement après résolution complète.", score:{soft:0}},
-{text:"Redémarrer tous les systèmes sans diagnostic.", score:{expertise:1}}]},
-{title:"Comité de direction", text:"Vous devez faire reconnaître le numérique comme levier stratégique et non comme simple support.", answers:[
-{text:"Relier SI, transformation des métiers, valeur publique, risques, données et capacité d’innovation institutionnelle.", score:{knowledge:3,leadership:4,soft:2,project:1}},
-{text:"Présenter un catalogue de services techniques.", score:{expertise:1}},
-{text:"Demander plus de budget sans récit stratégique.", score:{leadership:1}},
-{text:"Éviter les débats politiques de gouvernance.", score:{}}]},
-{title:"Interopérabilité", text:"Plusieurs applications métiers produisent des données incohérentes sur les mêmes objets.", answers:[
-{text:"Établir référentiels, gouvernance MDM, règles d’interopérabilité, responsabilités métier et trajectoire d’intégration.", score:{expertise:4,knowledge:2,project:2}},
-{text:"Créer un fichier Excel de consolidation manuelle.", score:{project:1}},
-{text:"Acheter un nouvel outil de reporting.", score:{expertise:1}},
-{text:"Laisser chaque service conserver sa définition.", score:{soft:0}}]},
-{title:"Déontologie", text:"Une demande d’accès à des données personnelles d’étudiants paraît juridiquement fragile.", answers:[
-{text:"Interroger finalité, proportionnalité, base légale, DPO, traçabilité et alternatives moins intrusives.", score:{knowledge:4,expertise:2,soft:1}},
-{text:"Accorder l’accès car la demande vient d’un supérieur.", score:{knowledge:0}},
-{text:"Refuser sans analyser la finalité.", score:{knowledge:1}},
-{text:"Demander à l’administrateur technique d’arbitrer.", score:{expertise:0}}]},
-{title:"Formation des agents", text:"Les évolutions numériques nécessitent une montée en compétences continue de vos équipes.", answers:[
-{text:"Construire un plan de compétences lié à la stratégie, aux métiers émergents, au mentorat et aux communautés de pratique.", score:{management:4,leadership:2,soft:2}},
-{text:"Attendre les demandes individuelles.", score:{management:1}},
-{text:"Former seulement les managers.", score:{management:1}},
-{text:"Sous-traiter les compétences nouvelles.", score:{project:1}}]},
-{title:"Anglais professionnel", text:"Vous représentez l’établissement dans un réseau européen de DSI universitaires.", answers:[
-{text:"Préparer une contribution claire en anglais, relier contexte français et enjeux européens, puis capitaliser pour l’interne.", score:{knowledge:2,soft:3,leadership:2}},
-{text:"Participer uniquement comme observateur.", score:{knowledge:1}},
-{text:"Déléguer systématiquement à un collègue anglophone.", score:{soft:1}},
-{text:"Limiter l’échange aux aspects techniques.", score:{expertise:1}}]},
-{title:"Audit externe", text:"Un audit critique pointe un manque de pilotage du portefeuille de projets numériques.", answers:[
-{text:"Transformer l’audit en plan d’action : priorisation, instances, indicateurs, capacités, risques et transparence.", score:{project:4,leadership:2,management:2,soft:1}},
-{text:"Contester publiquement l’audit.", score:{soft:0}},
-{text:"Créer un tableau de bord sans revoir les arbitrages.", score:{project:1}},
-{text:"Demander un nouvel audit.", score:{project:1}}]},
-{title:"Travail transversal", text:"Un projet nécessite la coopération DSI, scolarité, finances, RH, recherche et communication.", answers:[
-{text:"Installer une organisation transverse avec rôles, décisions, calendrier, règles de coopération et arbitrages.", score:{project:3,management:2,soft:3,knowledge:2}},
-{text:"Réunir tout le monde sans ordre du jour stable.", score:{soft:1}},
-{text:"Confier le projet uniquement à la DSI.", score:{expertise:1}},
-{text:"Laisser chaque direction avancer séparément.", score:{}}]},
-{title:"Culture usager", text:"Les étudiants jugent les services numériques peu lisibles.", answers:[
-{text:"Mettre en place écoute usager, parcours, tests, priorisation des irritants, design de service et communication ciblée.", score:{soft:3,project:2,expertise:2,leadership:1}},
-{text:"Considérer que les services existent déjà.", score:{}},
-{text:"Ajouter une FAQ générale.", score:{soft:1}},
-{text:"Demander aux étudiants de contacter chaque service.", score:{}}]},
-{title:"Gouvernance IA", text:"Plusieurs services expérimentent des outils d’IA générative sans cadre commun.", answers:[
-{text:"Élaborer un cadre d’usage proportionné : risques, données, achats, formation, éthique, mutualisation et retours d’expérience.", score:{knowledge:3,expertise:2,project:2,leadership:3}},
-{text:"Interdire tous les usages.", score:{knowledge:1}},
-{text:"Laisser les initiatives se diffuser naturellement.", score:{soft:1}},
-{text:"Choisir un outil unique sans analyse d’usage.", score:{expertise:1}}]},
-{title:"Arbitrage politique", text:"Deux vice-présidences portent des priorités numériques contradictoires.", answers:[
-{text:"Objectiver enjeux, dépendances, risques, ressources et scénarios, puis organiser un arbitrage explicite.", score:{leadership:3,soft:3,project:2,knowledge:2}},
-{text:"Soutenir la demande la plus visible.", score:{leadership:1}},
-{text:"Lancer les deux projets malgré les ressources limitées.", score:{project:0}},
-{text:"Demander aux équipes de se débrouiller.", score:{management:0}}]},
-{title:"Bilan annuel", text:"Vous devez rendre compte de l’action numérique devant les instances.", answers:[
-{text:"Présenter résultats, limites, indicateurs, trajectoire, contribution aux missions, risques et décisions attendues.", score:{knowledge:2,project:2,leadership:3,soft:3}},
-{text:"Lister les projets terminés.", score:{project:1}},
-{text:"Insister uniquement sur les difficultés budgétaires.", score:{knowledge:1}},
-{text:"Éviter les indicateurs pour ne pas être contesté.", score:{}}]}
+const QUESTIONS = [
+  {
+    id: 1,
+    competence: "C1",
+    domaine: "C",
+    question: "Un nouveau président souhaite repositionner la DSI comme acteur stratégique de l'établissement. Quelle approche privilégiez-vous ?",
+    answers: [
+      { text: "Produire une cartographie des enjeux métiers, numériques et institutionnels.", score: { C: 3, CG: 1 } },
+      { text: "Commencer par renouveler les infrastructures techniques.", score: { CT: 2 } },
+      { text: "Attendre les arbitrages politiques avant toute proposition.", score: { C: 1 } },
+      { text: "Réduire le sujet à une question de support informatique.", score: { CT: 1 } }
+    ]
+  },
+  {
+    id: 2,
+    competence: "CM1",
+    domaine: "CM",
+    question: "Une équipe de la DSI exprime une forte fatigue après plusieurs projets simultanés. Que faites-vous en priorité ?",
+    answers: [
+      { text: "Maintenir le calendrier initial pour respecter les engagements.", score: { CG: 1 } },
+      { text: "Écouter l'équipe, prioriser les projets et renégocier les charges.", score: { CM: 3, QP: 2 } },
+      { text: "Demander un audit externe sans modifier l'organisation.", score: { CM: 1 } },
+      { text: "Réaffecter les agents sans concertation.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 3,
+    competence: "CT1",
+    domaine: "CT",
+    question: "Un établissement envisage de migrer plusieurs applications critiques vers le cloud. Quelle est votre première analyse ?",
+    answers: [
+      { text: "Comparer uniquement les coûts d'abonnement.", score: { C: 1 } },
+      { text: "Lancer une migration rapide pour moderniser l'image de la DSI.", score: { CT: 1 } },
+      { text: "Évaluer architecture, sécurité, souveraineté, continuité et réversibilité.", score: { CT: 3, C: 2 } },
+      { text: "Déléguer entièrement le choix au prestataire.", score: { CT: 1 } }
+    ]
+  },
+  {
+    id: 4,
+    competence: "CG1",
+    domaine: "CG",
+    question: "Un projet SI scolarité prend du retard et les composantes s'inquiètent. Quelle action engagez-vous ?",
+    answers: [
+      { text: "Suspendre le projet jusqu'à nouvel ordre.", score: { CG: 1 } },
+      { text: "Réunir les parties prenantes, objectiver les risques et replanifier.", score: { CG: 3, CM: 2 } },
+      { text: "Communiquer uniquement avec la présidence.", score: { C: 1 } },
+      { text: "Renforcer uniquement l'équipe technique.", score: { CT: 2 } }
+    ]
+  },
+  {
+    id: 5,
+    competence: "QP1",
+    domaine: "QP",
+    question: "Lors d'un comité de direction, une décision numérique vous semble risquée juridiquement. Quelle posture adoptez-vous ?",
+    answers: [
+      { text: "Vous vous opposez frontalement sans argumenter.", score: { QP: 1 } },
+      { text: "Vous documentez les risques et proposez des scénarios alternatifs.", score: { QP: 3, C: 2 } },
+      { text: "Vous laissez la décision se prendre pour éviter le conflit.", score: { QP: 1 } },
+      { text: "Vous demandez aux équipes techniques de traiter le sujet plus tard.", score: { CT: 1 } }
+    ]
+  },
+
+  {
+    id: 6,
+    competence: "C2",
+    domaine: "C",
+    question: "Une fusion d'établissements impose une convergence des systèmes d'information. Quel point examinez-vous d'abord ?",
+    answers: [
+      { text: "La compatibilité des cultures organisationnelles, des processus et des données.", score: { C: 3, CM: 2 } },
+      { text: "Le choix immédiat d'un outil unique.", score: { CT: 1 } },
+      { text: "Le remplacement de toutes les applications existantes.", score: { CT: 1, CG: 1 } },
+      { text: "La communication externe du projet.", score: { C: 1 } }
+    ]
+  },
+  {
+    id: 7,
+    competence: "CM2",
+    domaine: "CM",
+    question: "Un responsable de pôle refuse d'adhérer à une nouvelle organisation DevOps. Que faites-vous ?",
+    answers: [
+      { text: "L'écarter du projet.", score: { CM: 1 } },
+      { text: "Imposer la méthode par note de service.", score: { CM: 1, CG: 1 } },
+      { text: "Identifier ses résistances, clarifier les bénéfices et accompagner la transition.", score: { CM: 3, QP: 2 } },
+      { text: "Reporter la transformation.", score: { CG: 1 } }
+    ]
+  },
+  {
+    id: 8,
+    competence: "CT2",
+    domaine: "CT",
+    question: "Une application historique fonctionne encore mais devient difficile à maintenir. Quelle stratégie adoptez-vous ?",
+    answers: [
+      { text: "La conserver sans analyse car elle fonctionne.", score: { CT: 1 } },
+      { text: "Décider seul de son remplacement.", score: { QP: 1 } },
+      { text: "Évaluer dette technique, criticité métier, coûts, risques et trajectoire cible.", score: { CT: 3, CG: 2 } },
+      { text: "Attendre une panne majeure pour agir.", score: { CT: 0 } }
+    ]
+  },
+  {
+    id: 9,
+    competence: "CG2",
+    domaine: "CG",
+    question: "Deux directions métiers formulent des besoins contradictoires pour un même projet décisionnel. Comment procédez-vous ?",
+    answers: [
+      { text: "Choisir la demande de la direction la plus influente.", score: { C: 1 } },
+      { text: "Organiser un arbitrage fondé sur les objectifs, les données et les usages.", score: { CG: 3, C: 2 } },
+      { text: "Demander à l'équipe technique de trancher.", score: { CT: 1 } },
+      { text: "Créer deux solutions séparées.", score: { CT: 1, CG: 1 } }
+    ]
+  },
+  {
+    id: 10,
+    competence: "QP2",
+    domaine: "QP",
+    question: "Un incident majeur survient pendant une période d'inscription étudiante. Quelle attitude est la plus adaptée ?",
+    answers: [
+      { text: "Communiquer avec calme, organiser la cellule de crise et prioriser le rétablissement.", score: { QP: 3, CT: 2, CM: 2 } },
+      { text: "Attendre d'avoir toutes les informations avant de communiquer.", score: { QP: 1 } },
+      { text: "Chercher immédiatement un responsable.", score: { CM: 0 } },
+      { text: "Fermer tous les services numériques par précaution.", score: { CT: 1 } }
+    ]
+  },
+
+  {
+    id: 11,
+    competence: "C3",
+    domaine: "C",
+    question: "Le budget numérique est contraint. Comment construisez-vous vos arbitrages ?",
+    answers: [
+      { text: "Réduire uniformément tous les budgets.", score: { CG: 1 } },
+      { text: "Prioriser selon la valeur métier, les risques, les obligations et la soutenabilité.", score: { C: 3, CG: 2 } },
+      { text: "Préserver uniquement les dépenses techniques.", score: { CT: 1 } },
+      { text: "Reporter les décisions à l'exercice suivant.", score: { QP: 1 } }
+    ]
+  },
+  {
+    id: 12,
+    competence: "CM3",
+    domaine: "CM",
+    question: "Un agent très compétent techniquement rencontre des difficultés relationnelles avec les métiers. Que faites-vous ?",
+    answers: [
+      { text: "Le maintenir à distance des utilisateurs.", score: { CM: 1 } },
+      { text: "L'accompagner par du feedback, de la formation et un cadre de coopération.", score: { CM: 3, QP: 2 } },
+      { text: "Ignorer le problème car la compétence technique est prioritaire.", score: { CT: 1 } },
+      { text: "Le changer immédiatement de poste.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 13,
+    competence: "CT3",
+    domaine: "CT",
+    question: "Un projet d'interopérabilité entre applications RH, finances et scolarité est lancé. Quel principe retenez-vous ?",
+    answers: [
+      { text: "Multiplier les exports Excel.", score: { CT: 0 } },
+      { text: "Mettre en place une architecture d'échanges documentée, sécurisée et gouvernée.", score: { CT: 3, C: 2 } },
+      { text: "Confier chaque interface à un prestataire différent sans cadre commun.", score: { CG: 1 } },
+      { text: "Attendre la refonte complète de tous les SI.", score: { CT: 1 } }
+    ]
+  },
+  {
+    id: 14,
+    competence: "CG3",
+    domaine: "CG",
+    question: "Un projet numérique stratégique suscite une forte résistance dans plusieurs composantes. Quelle réponse privilégiez-vous ?",
+    answers: [
+      { text: "Renforcer la communication descendante.", score: { CG: 1 } },
+      { text: "Identifier les controverses, associer les acteurs et ajuster la conduite du changement.", score: { CG: 3, CM: 2, QP: 2 } },
+      { text: "Réduire le périmètre sans concertation.", score: { CG: 1 } },
+      { text: "Poursuivre sans modifier la méthode.", score: { QP: 1 } }
+    ]
+  },
+  {
+    id: 15,
+    competence: "QP3",
+    domaine: "QP",
+    question: "Vous devez défendre une orientation numérique impopulaire mais nécessaire. Quelle posture adoptez-vous ?",
+    answers: [
+      { text: "Renoncer pour préserver le consensus.", score: { QP: 1 } },
+      { text: "Argumenter, écouter les objections et assumer la décision.", score: { QP: 3, C: 2 } },
+      { text: "Faire porter la décision par les équipes techniques.", score: { CM: 1 } },
+      { text: "Éviter le débat en comité.", score: { QP: 0 } }
+    ]
+  },
+
+  {
+    id: 16,
+    competence: "C4",
+    domaine: "C",
+    question: "Une nouvelle réglementation impose de revoir les traitements de données personnelles. Quelle démarche engagez-vous ?",
+    answers: [
+      { text: "Attendre les consignes nationales.", score: { C: 1 } },
+      { text: "Associer DPO, métiers, sécurité et responsables applicatifs pour établir un plan d'action.", score: { C: 3, CT: 2, CG: 2 } },
+      { text: "Supprimer temporairement les accès.", score: { CT: 1 } },
+      { text: "Demander uniquement aux prestataires de se mettre en conformité.", score: { C: 1 } }
+    ]
+  },
+  {
+    id: 17,
+    competence: "CM4",
+    domaine: "CM",
+    question: "La DSI peine à recruter sur des profils rares. Quelle réponse structurelle proposez-vous ?",
+    answers: [
+      { text: "Construire une politique compétences : formation, attractivité, parcours et mutualisation.", score: { CM: 3, C: 2 } },
+      { text: "Externaliser tous les sujets complexes.", score: { CT: 1 } },
+      { text: "Réduire l'ambition des projets.", score: { CG: 1 } },
+      { text: "Augmenter uniquement le nombre d'offres publiées.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 18,
+    competence: "CT4",
+    domaine: "CT",
+    question: "Une suspicion de fuite de données étudiantes est signalée. Quelle action immédiate est la plus pertinente ?",
+    answers: [
+      { text: "Attendre la confirmation complète avant d'agir.", score: { QP: 1 } },
+      { text: "Activer la procédure d'incident, qualifier le risque et associer RSSI/DPO.", score: { CT: 3, C: 2, QP: 2 } },
+      { text: "Couper définitivement l'application.", score: { CT: 1 } },
+      { text: "Informer seulement l'équipe technique.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 19,
+    competence: "QP4",
+    domaine: "QP",
+    question: "Un arbitrage ministériel modifie brutalement vos priorités numériques. Comment réagissez-vous ?",
+    answers: [
+      { text: "Reconfigurer la feuille de route en explicitant impacts, renoncements et priorités.", score: { QP: 3, CG: 2, C: 2 } },
+      { text: "Maintenir la trajectoire initiale.", score: { QP: 1 } },
+      { text: "Arrêter tous les projets en cours.", score: { CG: 0 } },
+      { text: "Transmettre la contrainte aux équipes sans médiation.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 20,
+    competence: "C5",
+    domaine: "C",
+    question: "Un partenaire propose une solution EdTech innovante mais propriétaire. Quelle analyse conduisez-vous ?",
+    answers: [
+      { text: "Accepter rapidement pour favoriser l'innovation.", score: { C: 1 } },
+      { text: "Évaluer usages, données, modèle économique, souveraineté, accessibilité et interopérabilité.", score: { C: 3, CT: 2 } },
+      { text: "Refuser par principe toute solution propriétaire.", score: { QP: 1 } },
+      { text: "Laisser les enseignants décider seuls.", score: { C: 1 } }
+    ]
+  },
+
+  {
+    id: 21,
+    competence: "CT5",
+    domaine: "CT",
+    question: "Votre établissement souhaite développer des services fondés sur la donnée. Quelle fondation vous paraît indispensable ?",
+    answers: [
+      { text: "Un outil de visualisation attractif.", score: { CT: 1 } },
+      { text: "Une gouvernance des données, des référentiels partagés et une qualité maîtrisée.", score: { CT: 3, C: 2, CG: 2 } },
+      { text: "Un prestataire unique pour tous les tableaux de bord.", score: { CG: 1 } },
+      { text: "Des exports réguliers depuis les applications métiers.", score: { CT: 1 } }
+    ]
+  },
+  {
+    id: 22,
+    competence: "QP5",
+    domaine: "QP",
+    question: "Un désaccord public apparaît entre vous et une direction métier lors d'une réunion stratégique. Quelle réaction adoptez-vous ?",
+    answers: [
+      { text: "Recadrer fermement la direction métier devant tous.", score: { QP: 1 } },
+      { text: "Reconnaître le désaccord, clarifier les faits et proposer un temps d'instruction.", score: { QP: 3, CM: 2 } },
+      { text: "Éviter de répondre.", score: { QP: 0 } },
+      { text: "Demander à la présidence de trancher immédiatement.", score: { C: 1 } }
+    ]
+  },
+  {
+    id: 23,
+    competence: "C6",
+    domaine: "C",
+    question: "Vous devez inscrire la DSI dans une logique de mutualisation inter-établissements. Quel principe guide votre action ?",
+    answers: [
+      { text: "Rechercher d'abord la standardisation technique.", score: { CT: 2 } },
+      { text: "Construire un cadre commun articulant gouvernance, bénéfices, responsabilités et soutenabilité.", score: { C: 3, CG: 2 } },
+      { text: "Mutualiser uniquement les coûts.", score: { C: 1 } },
+      { text: "Attendre qu'un autre établissement pilote le sujet.", score: { QP: 1 } }
+    ]
+  },
+  {
+    id: 24,
+    competence: "CT6",
+    domaine: "CT",
+    question: "L'accessibilité numérique des services en ligne est insuffisante. Que proposez-vous ?",
+    answers: [
+      { text: "Limiter l'action aux nouveaux projets.", score: { CT: 1 } },
+      { text: "Mettre en place un plan RGAA : audit, priorisation, correction, formation et suivi.", score: { CT: 3, C: 2, CG: 2 } },
+      { text: "Traiter uniquement les signalements utilisateurs.", score: { QP: 1 } },
+      { text: "Confier le sujet exclusivement au service communication.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 25,
+    competence: "QP6",
+    domaine: "QP",
+    question: "Un membre de votre équipe vous alerte sur une décision que vous avez prise. Que faites-vous ?",
+    answers: [
+      { text: "Vous maintenez la décision pour préserver l'autorité.", score: { QP: 1 } },
+      { text: "Vous examinez l'alerte, acceptez la contradiction et ajustez si nécessaire.", score: { QP: 3, CM: 2 } },
+      { text: "Vous déléguez le problème à son supérieur direct.", score: { CM: 1 } },
+      { text: "Vous attendez que le problème se confirme.", score: { QP: 1 } }
+    ]
+  },
+
+  {
+    id: 26,
+    competence: "QP7",
+    domaine: "QP",
+    question: "Une innovation technologique suscite un fort enthousiasme interne. Quelle vigilance gardez-vous ?",
+    answers: [
+      { text: "Transformer immédiatement l'innovation en projet institutionnel.", score: { CG: 1 } },
+      { text: "Évaluer les usages réels, les risques, les coûts et les conditions d'appropriation.", score: { QP: 3, C: 2, CT: 2 } },
+      { text: "Freiner le projet par prudence.", score: { QP: 1 } },
+      { text: "Confier l'expérimentation à un petit groupe sans cadre.", score: { CG: 1 } }
+    ]
+  },
+  {
+    id: 27,
+    competence: "QP8",
+    domaine: "QP",
+    question: "Vous devez présenter une trajectoire numérique complexe à des non-spécialistes. Quelle approche choisissez-vous ?",
+    answers: [
+      { text: "Présenter le détail complet de l'architecture technique.", score: { CT: 1 } },
+      { text: "Simplifier sans déformer, relier les choix techniques aux enjeux métiers.", score: { QP: 3, C: 2 } },
+      { text: "Réduire la présentation aux contraintes budgétaires.", score: { C: 1 } },
+      { text: "Éviter les débats pour gagner du temps.", score: { QP: 1 } }
+    ]
+  },
+  {
+    id: 28,
+    competence: "QP9",
+    domaine: "QP",
+    question: "Un projet porté par la DSI échoue partiellement. Quelle attitude adoptez-vous ?",
+    answers: [
+      { text: "Valoriser uniquement les réussites.", score: { QP: 1 } },
+      { text: "Organiser un retour d'expérience collectif pour apprendre et ajuster.", score: { QP: 3, CG: 2, CM: 2 } },
+      { text: "Attribuer l'échec au manque d'engagement des métiers.", score: { CM: 0 } },
+      { text: "Changer immédiatement de méthode projet.", score: { CG: 1 } }
+    ]
+  },
+  {
+    id: 29,
+    competence: "QP10",
+    domaine: "QP",
+    question: "Vous êtes sollicité sur plusieurs urgences simultanées. Comment arbitrez-vous ?",
+    answers: [
+      { text: "Traiter les demandes dans leur ordre d'arrivée.", score: { QP: 1 } },
+      { text: "Prioriser selon criticité, impact usager, risque institutionnel et capacité disponible.", score: { QP: 3, CG: 2, C: 2 } },
+      { text: "Répondre d'abord aux demandes de la gouvernance.", score: { C: 1 } },
+      { text: "Transmettre toutes les urgences aux responsables de pôle.", score: { CM: 1 } }
+    ]
+  },
+  {
+    id: 30,
+    competence: "Synthèse",
+    domaine: "CG",
+    question: "Vous devez construire la feuille de route numérique de l'établissement pour trois ans. Quelle méthode retenez-vous ?",
+    answers: [
+      { text: "Partir des besoins institutionnels, des usages, des risques, des moyens et des capacités de transformation.", score: { C: 3, CG: 3, CM: 2, CT: 2, QP: 2 } },
+      { text: "Lister les projets techniques demandés par la DSI.", score: { CT: 2 } },
+      { text: "Reprendre la feuille de route précédente.", score: { CG: 1 } },
+      { text: "Construire uniquement une trajectoire budgétaire.", score: { C: 2 } }
+    ]
+  }
 ];
