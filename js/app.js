@@ -10,32 +10,27 @@ const AXES_DESCRIPTIONS = {
   C: {
     title: "Connaissances",
     referentiel: "C1 à C6",
-    description:
-      "Compréhension de l’environnement ESR, des enjeux institutionnels, réglementaires, financiers et stratégiques."
+    description: "Compréhension de l’environnement ESR, des enjeux institutionnels, réglementaires, financiers et stratégiques."
   },
   CM: {
     title: "Management",
     referentiel: "CM1 à CM4",
-    description:
-      "Animation des équipes, développement des compétences, organisation du travail et accompagnement du changement."
+    description: "Animation des équipes, développement des compétences, organisation du travail et accompagnement du changement."
   },
   CT: {
     title: "Technique",
     referentiel: "CT1 à CT6",
-    description:
-      "Pilotage des infrastructures, applications, architectures, données, sécurité, accessibilité et continuité de service."
+    description: "Pilotage des infrastructures, applications, architectures, données, sécurité, accessibilité et continuité de service."
   },
   CG: {
     title: "Conduite de projet",
     referentiel: "CG1 à CG3",
-    description:
-      "Gouvernance, pilotage de portefeuille, gestion des risques, arbitrage des priorités et conduite du changement."
+    description: "Gouvernance, pilotage de portefeuille, gestion des risques, arbitrage des priorités et conduite du changement."
   },
   QP: {
     title: "Qualités personnelles",
     referentiel: "QP1 à QP10",
-    description:
-      "Discernement, écoute, communication, sens politique, responsabilité, résilience et capacité d’adaptation."
+    description: "Discernement, écoute, communication, sens politique, responsabilité, résilience et capacité d’adaptation."
   }
 };
 
@@ -43,44 +38,52 @@ let currentQuestion = 0;
 let answers = {};
 let radarChart = null;
 
-const introSection = document.getElementById("introSection");
-const testSection = document.getElementById("testSection");
-const resultsSection = document.getElementById("resultsSection");
+const intro = document.getElementById("intro");
+const quiz = document.getElementById("quiz");
+const results = document.getElementById("results");
 
 const startBtn = document.getElementById("startBtn");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
+const restartBtn = document.getElementById("restartBtn");
 
-const questionContainer = document.getElementById("questionContainer");
 const progressText = document.getElementById("progressText");
-const detailTable = document.getElementById("detailTable");
+const progressBar = document.getElementById("progressBar");
+const questionTitle = document.getElementById("questionTitle");
+const questionText = document.getElementById("questionText");
+const answersBox = document.getElementById("answers");
 
-const exportPdfBtn = document.getElementById("exportPdfBtn");
-const exportCsvBtn = document.getElementById("exportCsvBtn");
-const exportJsonBtn = document.getElementById("exportJsonBtn");
+const profileTitle = document.getElementById("profileTitle");
+const profileSummary = document.getElementById("profileSummary");
+const globalScore = document.getElementById("globalScore");
+const recommendations = document.getElementById("recommendations");
+const axisDetails = document.getElementById("axisDetails");
 
-if (startBtn) startBtn.addEventListener("click", startTest);
-if (prevBtn) prevBtn.addEventListener("click", previousQuestion);
-if (nextBtn) nextBtn.addEventListener("click", nextQuestion);
+const pdfBtn = document.getElementById("pdfBtn");
+const csvBtn = document.getElementById("csvBtn");
+const jsonBtn = document.getElementById("jsonBtn");
 
-if (exportPdfBtn) exportPdfBtn.addEventListener("click", exportPDF);
-if (exportCsvBtn) exportCsvBtn.addEventListener("click", exportCSV);
-if (exportJsonBtn) exportJsonBtn.addEventListener("click", exportJSON);
+startBtn.addEventListener("click", startTest);
+prevBtn.addEventListener("click", previousQuestion);
+nextBtn.addEventListener("click", nextQuestion);
+restartBtn.addEventListener("click", () => location.reload());
+
+pdfBtn.addEventListener("click", exportPDF);
+csvBtn.addEventListener("click", exportCSV);
+jsonBtn.addEventListener("click", exportJSON);
 
 function startTest() {
+  if (typeof QUESTIONS === "undefined") {
+    alert("Erreur : le fichier questions.js n’est pas chargé.");
+    return;
+  }
+
   currentQuestion = 0;
   answers = {};
 
-  if (introSection) introSection.style.display = "none";
-  if (testSection) testSection.style.display = "block";
-  if (resultsSection) resultsSection.style.display = "none";
-
-  if (questionContainer) questionContainer.style.display = "block";
-  if (prevBtn) prevBtn.disabled = true;
-  if (nextBtn) {
-    nextBtn.disabled = false;
-    nextBtn.textContent = "Suivant";
-  }
+  intro.classList.add("hidden");
+  quiz.classList.remove("hidden");
+  results.classList.add("hidden");
 
   renderQuestion();
 }
@@ -88,33 +91,18 @@ function startTest() {
 function renderQuestion() {
   const q = QUESTIONS[currentQuestion];
 
-  if (!q) return;
-
   progressText.textContent = `Question ${currentQuestion + 1} / ${QUESTIONS.length}`;
+  progressBar.style.width = `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
 
-  questionContainer.innerHTML = `
-    <div class="question-card">
-      <p class="competence">
-        <strong>${q.competence}</strong> — ${AXES[q.domaine] || q.domaine}
-      </p>
+  questionTitle.textContent = `${q.competence} — ${AXES[q.domaine]}`;
+  questionText.textContent = q.question;
 
-      <h3>${q.question}</h3>
-
-      <div class="answers">
-        ${q.answers.map((answer, index) => `
-          <label class="answer">
-            <input 
-              type="radio" 
-              name="answer" 
-              value="${index}"
-              ${answers[q.id] === index ? "checked" : ""}
-            >
-            <span>${answer.text}</span>
-          </label>
-        `).join("")}
-      </div>
-    </div>
-  `;
+  answersBox.innerHTML = q.answers.map((answer, index) => `
+    <label class="answer">
+      <input type="radio" name="answer" value="${index}" ${answers[q.id] === index ? "checked" : ""}>
+      <span>${answer.text}</span>
+    </label>
+  `).join("");
 
   document.querySelectorAll("input[name='answer']").forEach(input => {
     input.addEventListener("change", event => {
@@ -122,20 +110,12 @@ function renderQuestion() {
     });
   });
 
-  if (prevBtn) prevBtn.disabled = currentQuestion === 0;
-
-  if (nextBtn) {
-    nextBtn.textContent =
-      currentQuestion === QUESTIONS.length - 1
-        ? "Voir les résultats"
-        : "Suivant";
-  }
+  prevBtn.disabled = currentQuestion === 0;
+  nextBtn.textContent = currentQuestion === QUESTIONS.length - 1 ? "Voir les résultats" : "Suivant";
 }
 
 function nextQuestion() {
   const q = QUESTIONS[currentQuestion];
-
-  if (!q) return;
 
   if (answers[q.id] === undefined) {
     alert("Veuillez choisir une réponse avant de continuer.");
@@ -158,70 +138,51 @@ function previousQuestion() {
 }
 
 function calculateScores() {
-  const rawScores = {};
-  const maxScores = {};
-
-  Object.keys(AXES).forEach(axis => {
-    rawScores[axis] = 0;
-    maxScores[axis] = 0;
-  });
+  const rawScores = { C: 0, CM: 0, CT: 0, CG: 0, QP: 0 };
+  const maxScores = { C: 0, CM: 0, CT: 0, CG: 0, QP: 0 };
 
   QUESTIONS.forEach(q => {
-    const selectedIndex = answers[q.id];
-    const selectedAnswer = q.answers[selectedIndex];
+    const selectedAnswer = q.answers[answers[q.id]];
 
     Object.keys(AXES).forEach(axis => {
-      const possibleScores = q.answers.map(answer => {
-        return answer.score && answer.score[axis] ? answer.score[axis] : 0;
-      });
-
-      const maxForQuestion = Math.max(...possibleScores);
+      const maxForQuestion = Math.max(...q.answers.map(a => a.score?.[axis] || 0));
       maxScores[axis] += maxForQuestion;
-
-      if (
-        selectedAnswer &&
-        selectedAnswer.score &&
-        selectedAnswer.score[axis]
-      ) {
-        rawScores[axis] += selectedAnswer.score[axis];
-      }
+      rawScores[axis] += selectedAnswer?.score?.[axis] || 0;
     });
   });
 
   const percentages = {};
 
   Object.keys(AXES).forEach(axis => {
-    percentages[axis] =
-      maxScores[axis] > 0
-        ? Math.round((rawScores[axis] / maxScores[axis]) * 100)
-        : 0;
+    percentages[axis] = maxScores[axis]
+      ? Math.round((rawScores[axis] / maxScores[axis]) * 100)
+      : 0;
   });
 
-  return {
-    rawScores,
-    maxScores,
-    percentages
-  };
+  return percentages;
 }
 
 function showResults() {
-  if (testSection) testSection.style.display = "none";
-  if (introSection) introSection.style.display = "none";
-  if (resultsSection) resultsSection.style.display = "block";
+  quiz.classList.add("hidden");
+  results.classList.remove("hidden");
 
-  if (prevBtn) prevBtn.disabled = true;
-  if (nextBtn) nextBtn.disabled = true;
+  const scores = calculateScores();
+  const average = Math.round(
+    Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length
+  );
 
-  const results = calculateScores();
+  globalScore.textContent = average;
+  profileTitle.textContent = "Profil de positionnement DSI-DSIN";
+  profileSummary.textContent =
+    "Ce résultat constitue une aide à la lecture de votre positionnement professionnel. Il ne s’agit pas d’une évaluation certificative.";
 
-  renderRadar(results.percentages);
-  renderDetails(results.percentages);
+  renderRadar(scores);
+  renderDetails(scores);
+  renderRecommendations(scores);
 }
 
 function renderRadar(scores) {
   const canvas = document.getElementById("radarChart");
-
-  if (!canvas) return;
 
   if (radarChart) {
     radarChart.destroy();
@@ -231,13 +192,11 @@ function renderRadar(scores) {
     type: "radar",
     data: {
       labels: Object.values(AXES),
-      datasets: [
-        {
-          label: "Positionnement DSI-DSIN",
-          data: Object.keys(AXES).map(axis => scores[axis]),
-          fill: true
-        }
-      ]
+      datasets: [{
+        label: "Positionnement DSI-DSIN",
+        data: Object.keys(AXES).map(axis => scores[axis]),
+        fill: true
+      }]
     },
     options: {
       responsive: true,
@@ -249,52 +208,55 @@ function renderRadar(scores) {
             stepSize: 20
           }
         }
-      },
-      plugins: {
-        legend: {
-          display: true
-        }
       }
     }
   });
 }
 
 function renderDetails(scores) {
-  if (!detailTable) return;
+  axisDetails.innerHTML = Object.keys(AXES_DESCRIPTIONS).map(axis => `
+    <div class="axis-card">
+      <h4>${AXES_DESCRIPTIONS[axis].title} — ${AXES_DESCRIPTIONS[axis].referentiel}</h4>
+      <p><strong>Score : ${scores[axis]}%</strong></p>
+      <p>${AXES_DESCRIPTIONS[axis].description}</p>
+    </div>
+  `).join("");
+}
 
-  detailTable.innerHTML = `
-    <table>
-      <thead>
-        <tr>
-          <th>Domaine</th>
-          <th>Référentiel</th>
-          <th>Score</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${Object.keys(AXES_DESCRIPTIONS).map(axis => `
-          <tr>
-            <td><strong>${AXES_DESCRIPTIONS[axis].title}</strong></td>
-            <td>${AXES_DESCRIPTIONS[axis].referentiel}</td>
-            <td><strong>${scores[axis]}%</strong></td>
-            <td>${AXES_DESCRIPTIONS[axis].description}</td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
+function renderRecommendations(scores) {
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const strongest = sorted[0];
+  const weakest = sorted[sorted.length - 1];
+
+  recommendations.innerHTML = `
+    <div class="recommendation">
+      <h3>Point d’appui principal</h3>
+      <p><strong>${AXES[strongest[0]]}</strong> : ${strongest[1]}%</p>
+    </div>
+
+    <div class="recommendation">
+      <h3>Axe prioritaire de développement</h3>
+      <p><strong>${AXES[weakest[0]]}</strong> : ${weakest[1]}%</p>
+    </div>
+
+    <div class="recommendation">
+      <h3>Usage conseillé</h3>
+      <p>
+        Utilisez ces résultats pour objectiver un positionnement
+        et construire un parcours de formation adapté.
+      </p>
+    </div>
   `;
 }
 
 function getResultsPayload() {
-  const results = calculateScores();
+  const scores = calculateScores();
 
   return {
     date: new Date().toISOString(),
     referentiel: "DSI-DSIN",
     source: "https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF",
-    scores: results.percentages,
-    details: AXES_DESCRIPTIONS,
+    scores,
     answers: QUESTIONS.map(q => {
       const selectedIndex = answers[q.id];
       const selectedAnswer = q.answers[selectedIndex];
@@ -312,8 +274,7 @@ function getResultsPayload() {
 }
 
 function exportJSON() {
-  const payload = getResultsPayload();
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+  const blob = new Blob([JSON.stringify(getResultsPayload(), null, 2)], {
     type: "application/json"
   });
 
@@ -321,7 +282,7 @@ function exportJSON() {
 }
 
 function exportCSV() {
-  const results = calculateScores();
+  const scores = calculateScores();
 
   let csv = "Domaine;Référentiel;Score;Description\n";
 
@@ -329,11 +290,9 @@ function exportCSV() {
     csv += [
       AXES_DESCRIPTIONS[axis].title,
       AXES_DESCRIPTIONS[axis].referentiel,
-      `${results.percentages[axis]}%`,
+      `${scores[axis]}%`,
       AXES_DESCRIPTIONS[axis].description
-    ]
-      .map(value => `"${String(value).replaceAll('"', '""')}"`)
-      .join(";") + "\n";
+    ].map(v => `"${String(v).replaceAll('"', '""')}"`).join(";") + "\n";
   });
 
   const blob = new Blob([csv], {
@@ -353,7 +312,6 @@ function downloadBlob(blob, filename) {
 
   link.href = url;
   link.download = filename;
-
   document.body.appendChild(link);
   link.click();
 
