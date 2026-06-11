@@ -1,46 +1,209 @@
-<section id="intro" class="panel">
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Auto-positionnement DSI-DSIN ESR</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
 
-  <h2>Présentation du référentiel DSI-DSIN</h2>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Référentiel DSI-DSIN</p>
+      <h1>Test d’auto-positionnement professionnel</h1>
+      <p class="lead">
+        30 situations contextualisées dans l’enseignement supérieur et la recherche
+        pour situer vos compétences de direction du numérique.
+      </p>
+    </div>
 
-  <p>
-    Ce test d’auto-positionnement s’appuie sur le référentiel national des
-    <strong>Directeurs des Systèmes d’Information et du Numérique (DSI-DSIN)</strong>
-    des établissements de l’enseignement supérieur et de la recherche.
-  </p>
+    <div class="hero-card">
+      <strong>Axes évalués</strong>
+      <span>
+        Connaissances (C1-C6) ·
+        Management (CM1-CM4) ·
+        Technique (CT1-CT6) ·
+        Conduite de projet (CG1-CG3) ·
+        Qualités personnelles (QP1-QP10)
+      </span>
+    </div>
+  </header>
 
-  <p>
-    Le référentiel décrit les connaissances, compétences managériales,
-    compétences techniques, capacités de conduite de projet et qualités
-    personnelles attendues pour exercer les fonctions de direction du numérique
-    dans les établissements de l’ESR.
-  </p>
+  <main class="container">
 
-  <p>
-    Les situations proposées dans ce questionnaire sont inspirées de contextes
-    professionnels rencontrés par les DSI et DSIN. Il n’existe pas une unique
-    bonne réponse : l’objectif est d’identifier les compétences que vous
-    mobilisez spontanément dans votre pratique professionnelle.
-  </p>
+    <section id="intro" class="panel">
 
-  <p>
-    Cet outil sert à
-    <strong>objectiver un positionnement</strong>
-    et à
-    <strong>construire un parcours de formation</strong>.
-  </p>
+      <h2>Présentation du référentiel DSI-DSIN</h2>
 
-  <div class="reference-box">
-    <strong>Source du référentiel :</strong><br>
-    <a href="https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF"
-       target="_blank">
-       Référentiel DSI-DSIN – Ministère de l’Enseignement supérieur et de la Recherche
-    </a>
-  </div>
+      <p>
+        Ce test d’auto-positionnement s’appuie sur le référentiel national des
+        <strong>Directeurs des Systèmes d’Information et du Numérique (DSI-DSIN)</strong>
+        des établissements de l’enseignement supérieur et de la recherche.
+      </p>
 
-  <hr>
+      <p>
+        Le référentiel décrit les connaissances, les compétences managériales,
+        les compétences techniques, les capacités de conduite de projet et les
+        qualités personnelles attendues pour exercer des fonctions de direction
+        du numérique dans les établissements de l’ESR.
+      </p>
 
-  <h3>Informations facultatives</h3>
+      <p>
+        Les situations proposées dans ce questionnaire sont inspirées de contextes
+        professionnels rencontrés par les DSI et DSIN. L’objectif n’est pas de
+        délivrer une certification, mais d’identifier les compétences mobilisées
+        spontanément dans différentes situations professionnelles.
+      </p>
 
-  <p>
-    Ces informations permettent de personnaliser le rapport généré à la fin du test.
-  </p>
+      <p>
+        Cet outil sert à
+        <strong>objectiver un positionnement</strong>
+        et à
+        <strong>construire un parcours de formation</strong>.
+      </p>
+
+      <div class="reference-box">
+        <strong>Source du référentiel :</strong><br>
+        <a href="https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF"
+           target="_blank">
+          Référentiel DSI-DSIN – Ministère de l’Enseignement supérieur et de la Recherche
+        </a>
+      </div>
+
+      <hr>
+
+      <h2>Avant de commencer</h2>
+
+      <p>
+        Chaque question décrit une situation professionnelle de DSI/DSIN.
+        Choisissez la réponse qui correspond le mieux à votre réaction spontanée.
+      </p>
+
+      <div class="form-grid">
+        <label>
+          Nom ou pseudonyme
+          <input id="userName" placeholder="Facultatif" />
+        </label>
+
+        <label>
+          Contexte
+          <input id="userContext" placeholder="Université, école, organisme…" />
+        </label>
+      </div>
+
+      <button id="startBtn" class="primary">Commencer le test</button>
+    </section>
+
+    <section id="quiz" class="panel hidden">
+      <div class="quiz-top">
+        <div>
+          <p id="progressText" class="eyebrow"></p>
+          <h2 id="questionTitle"></h2>
+        </div>
+
+        <div class="progress">
+          <div id="progressBar"></div>
+        </div>
+      </div>
+
+      <p id="questionText" class="scenario"></p>
+
+      <div id="answers" class="answers"></div>
+
+      <div class="nav">
+        <button id="prevBtn" class="secondary">Précédent</button>
+        <button id="nextBtn" class="primary">Suivant</button>
+      </div>
+    </section>
+
+    <section id="results" class="panel hidden">
+      <div class="results-head">
+        <div>
+          <p class="eyebrow">Résultats</p>
+          <h2 id="profileTitle"></h2>
+          <p id="profileSummary"></p>
+        </div>
+
+        <div class="score-badge">
+          <span id="globalScore">0</span>%
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="chart-wrap">
+          <canvas id="radarChart"></canvas>
+        </div>
+
+        <div id="recommendations" class="recommendations"></div>
+      </div>
+
+      <h3>Détail par axe</h3>
+      <div id="axisDetails" class="axis-details"></div>
+
+      <h3>Lecture des domaines du référentiel</h3>
+
+      <div class="axis-details">
+
+        <div class="axis-card">
+          <h4>C — Connaissances</h4>
+          <p>
+            Compréhension de l’environnement institutionnel, réglementaire,
+            budgétaire et stratégique de l’enseignement supérieur et de la recherche.
+          </p>
+        </div>
+
+        <div class="axis-card">
+          <h4>CM — Management</h4>
+          <p>
+            Capacité à organiser, animer et développer les équipes ainsi qu’à
+            accompagner les transformations.
+          </p>
+        </div>
+
+        <div class="axis-card">
+          <h4>CT — Technique</h4>
+          <p>
+            Maîtrise des architectures, infrastructures, applications, données,
+            sécurité et accessibilité du système d’information.
+          </p>
+        </div>
+
+        <div class="axis-card">
+          <h4>CG — Conduite de projet</h4>
+          <p>
+            Pilotage des projets numériques, gouvernance, arbitrages et conduite
+            du changement.
+          </p>
+        </div>
+
+        <div class="axis-card">
+          <h4>QP — Qualités personnelles</h4>
+          <p>
+            Leadership, communication, discernement, résilience, sens politique
+            et capacité d’adaptation.
+          </p>
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button id="pdfBtn" class="primary">Exporter en PDF</button>
+        <button id="csvBtn" class="secondary">Exporter en CSV</button>
+        <button id="jsonBtn" class="secondary">Exporter en JSON</button>
+        <button id="restartBtn" class="secondary">Recommencer</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Prototype pédagogique autonome, hébergeable sur GitHub Pages.
+    Données conservées uniquement dans le navigateur, sauf export volontaire.
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
