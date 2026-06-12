@@ -139,13 +139,27 @@ label {
   font-weight: 600;
 }
 
-input {
+.form-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-grid input {
   width: 100%;
-  margin-top: 8px;
-  padding: 13px 14px;
+  max-width: 360px;
+  height: 46px;
+  margin-top: 0;
+  padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 12px;
   font: inherit;
+  background: white;
+  box-shadow: none;
+}
+
+.form-grid input::placeholder {
+  color: var(--muted);
 }
 
 button {
