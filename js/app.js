@@ -91,10 +91,14 @@ function startTest() {
 function renderQuestion() {
   const q = QUESTIONS[currentQuestion];
 
-  progressText.textContent = `Question ${currentQuestion + 1} / ${QUESTIONS.length}`;
-  progressBar.style.width = `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
+  progressText.textContent =
+    `Situation ${currentQuestion + 1} sur ${QUESTIONS.length}`;
 
-  questionTitle.textContent = `${q.competence} — ${AXES[q.domaine]}`;
+  progressBar.style.width =
+    `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
+
+  questionTitle.textContent = "";
+
   questionText.textContent = q.question;
 
   answersBox.innerHTML = q.answers.map((answer, index) => `
