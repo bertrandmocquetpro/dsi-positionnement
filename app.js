@@ -167,7 +167,31 @@ $('prevBtn').onclick=()=>{ if(current>0){current--;renderQuestion();} };
 $('nextBtn').onclick=()=>{ if(selections[current]===null){alert('Veuillez choisir une réponse.');return;} if(current<questions.length-1){current++;renderQuestion();}else showResults(); };
 $('restartBtn').onclick=()=>location.reload();
 $('pdfBtn').onclick=exportPDF; $('csvBtn').onclick=exportCSV; $('jsonBtn').onclick=exportJSON;
-function renderQuestion(){const q=questions[current];$('progressText').textContent=`Question ${current+1} sur ${questions.length}`;$('questionTitle').textContent=q.title;$('questionText').textContent=q.text;$('progressBar').style.width=`${((current+1)/questions.length)*100}%`;$('answers').innerHTML='';q.answers.forEach((a,i)=>{const d=document.createElement('div');d.className='answer'+(selections[current]===i?' selected':'');d.innerHTML=`<strong>${String.fromCharCode(65+i)}.</strong> ${a.text}<small>Réponse ${i+1}</small>`;d.onclick=()=>{selections[current]=i;renderQuestion();};$('answers').appendChild(d);});$('prevBtn').disabled=current===0;$('nextBtn').textContent=current===questions.length-1?'Voir les résultats':'Suivant';}
+function renderQuestion() {
+  const q = questions[current];
+
+  $('progressText').textContent = `Situation ${current + 1} sur ${questions.length}`;
+  $('questionTitle').textContent = "";
+  $('questionText').textContent = q.text;
+  $('progressBar').style.width = `${((current + 1) / questions.length) * 100}%`;
+
+  $('answers').innerHTML = "";
+
+  q.answers.forEach((a, i) => {
+    const d = document.createElement("div");
+    d.className = "answer" + (selections[current] === i ? " selected" : "");
+    d.innerHTML = `${a.text}`;
+    d.onclick = () => {
+      selections[current] = i;
+      renderQuestion();
+    };
+    $('answers').appendChild(d);
+  });
+
+  $('prevBtn').disabled = current === 0;
+  $('nextBtn').textContent =
+    current === questions.length - 1 ? "Voir les résultats" : "Suivant";
+}                                                                                                                                                                                                                                                                                                                                                                                                                                            renderQuestion();};$('answers').appendChild(d);});$('prevBtn').disabled=current===0;$('nextBtn').textContent=current===questions.length-1?'Voir les résultats':'Suivant';}
 function compute(){let raw={}, max={}; Object.keys(axes).forEach(k=>{raw[k]=0;max[k]=0}); questions.forEach((q,qi)=>{Object.keys(axes).forEach(k=>{let m=Math.max(...q.answers.map(a=>a.score[k]||0)); max[k]+=m;}); const a=q.answers[selections[qi]]; Object.keys(a.score).forEach(k=> raw[k]+=a.score[k]);}); let pct={}; Object.keys(axes).forEach(k=>pct[k]=max[k]?Math.round(raw[k]/max[k]*100):0); return {raw,max,pct,global:Math.round(Object.values(pct).reduce((a,b)=>a+b,0)/Object.keys(pct).length)};}
 function showResults(){ $('quiz').classList.add('hidden'); $('results').classList.remove('hidden'); const r=compute(); $('globalScore').textContent=r.global; const lowest=Object.keys(r.pct).sort((a,b)=>r.pct[a]-r.pct[b])[0]; const highest=Object.keys(r.pct).sort((a,b)=>r.pct[b]-r.pct[a])[0]; $('profileTitle').textContent = r.global>=80?'Profil DSI-DSIN stratégique confirmé':r.global>=60?'Profil DSI-DSIN en consolidation':'Profil DSI-DSIN à structurer'; $('profileSummary').textContent=`Point fort principal : ${axes[highest].label}. Axe prioritaire de développement : ${axes[lowest].label}.`; drawRadar(r.pct); renderDetails(r.pct); renderRecs(r.pct);}
 function drawRadar(pct){const ctx=$('radarChart'); if(chart) chart.destroy(); chart=new Chart(ctx,{type:'radar',data:{labels:Object.keys(axes).map(k=>axes[k].label),datasets:[{label:'Positionnement (%)',data:Object.keys(axes).map(k=>pct[k]),fill:true}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:20}}},plugins:{legend:{display:false}}}});}
