@@ -1,324 +1,476 @@
-const AXES = {
-  C: "Connaissances",
-  CM: "Management",
-  CT: "Technique",
-  CG: "Conduite de projet",
-  QP: "Qualités personnelles"
-};
-
-const AXES_DESCRIPTIONS = {
+const REFERENTIEL = {
   C: {
-    title: "Connaissances",
-    referentiel: "C1 à C6",
-    description: "Compréhension de l’environnement ESR, des enjeux institutionnels, réglementaires, financiers et stratégiques."
+    label: "Connaissances",
+    refs: ["C1", "C2", "C3", "C4", "C5", "C6"]
   },
   CM: {
-    title: "Management",
-    referentiel: "CM1 à CM4",
-    description: "Animation des équipes, développement des compétences, organisation du travail et accompagnement du changement."
+    label: "Management",
+    refs: ["CM1", "CM2", "CM3", "CM4"]
   },
   CT: {
-    title: "Technique",
-    referentiel: "CT1 à CT6",
-    description: "Pilotage des infrastructures, applications, architectures, données, sécurité, accessibilité et continuité de service."
+    label: "Technique",
+    refs: ["CT1", "CT2", "CT3", "CT4", "CT5", "CT6"]
   },
   CG: {
-    title: "Conduite de projet",
-    referentiel: "CG1 à CG3",
-    description: "Gouvernance, pilotage de portefeuille, gestion des risques, arbitrage des priorités et conduite du changement."
+    label: "Conduite de projet",
+    refs: ["CG1", "CG2", "CG3"]
   },
   QP: {
-    title: "Qualités personnelles",
-    referentiel: "QP1 à QP10",
-    description: "Discernement, écoute, communication, sens politique, responsabilité, résilience et capacité d’adaptation."
+    label: "Qualités personnelles",
+    refs: ["QP1", "QP2", "QP3", "QP4", "QP5", "QP6", "QP7", "QP8", "QP9", "QP10"]
   }
 };
 
-let currentQuestion = 0;
-let answers = {};
-let radarChart = null;
+const COMPETENCE_LABELS = {
+  C1: "Environnement institutionnel ESR",
+  C2: "Organisation et processus universitaires",
+  C3: "Budget, achats et soutenabilité",
+  C4: "Cadre juridique, RGPD et conformité",
+  C5: "Données, stratégie numérique et usages",
+  C6: "Mutualisation et écosystème ESR",
 
-const intro = document.getElementById("intro");
-const quiz = document.getElementById("quiz");
-const results = document.getElementById("results");
+  CM1: "Organisation du travail",
+  CM2: "Animation et accompagnement des équipes",
+  CM3: "Développement des compétences",
+  CM4: "Dialogue social et qualité de vie au travail",
 
-const startBtn = document.getElementById("startBtn");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
-const restartBtn = document.getElementById("restartBtn");
+  CT1: "Infrastructures et exploitation",
+  CT2: "Applications et urbanisation",
+  CT3: "Interopérabilité et architecture SI",
+  CT4: "Sécurité et continuité",
+  CT5: "Données et décisionnel",
+  CT6: "Cloud, accessibilité et soutenabilité technique",
 
-const progressText = document.getElementById("progressText");
-const progressBar = document.getElementById("progressBar");
-const questionTitle = document.getElementById("questionTitle");
-const questionText = document.getElementById("questionText");
-const answersBox = document.getElementById("answers");
+  CG1: "Gouvernance et cadrage des projets",
+  CG2: "Arbitrage, risques et priorisation",
+  CG3: "Conduite du changement",
 
-const profileTitle = document.getElementById("profileTitle");
-const profileSummary = document.getElementById("profileSummary");
-const globalScore = document.getElementById("globalScore");
-const recommendations = document.getElementById("recommendations");
-const axisDetails = document.getElementById("axisDetails");
+  QP1: "Discernement et analyse",
+  QP2: "Gestion du stress et de crise",
+  QP3: "Courage managérial",
+  QP4: "Adaptabilité",
+  QP5: "Écoute",
+  QP6: "Coopération",
+  QP7: "Innovation raisonnée",
+  QP8: "Communication",
+  QP9: "Apprentissage réflexif",
+  QP10: "Sens du service public"
+};
 
-const pdfBtn = document.getElementById("pdfBtn");
-const csvBtn = document.getElementById("csvBtn");
-const jsonBtn = document.getElementById("jsonBtn");
+let current = 0;
+let selections = Array(questions.length).fill(null);
+let displayedAnswers = [];
+let chart = null;
 
-startBtn.addEventListener("click", startTest);
-prevBtn.addEventListener("click", previousQuestion);
-nextBtn.addEventListener("click", nextQuestion);
-restartBtn.addEventListener("click", () => location.reload());
+const $ = id => document.getElementById(id);
 
-pdfBtn.addEventListener("click", exportPDF);
-csvBtn.addEventListener("click", exportCSV);
-jsonBtn.addEventListener("click", exportJSON);
-
-function startTest() {
-  if (typeof QUESTIONS === "undefined") {
-    alert("Erreur : le fichier questions.js n’est pas chargé.");
-    return;
-  }
-
-  currentQuestion = 0;
-  answers = {};
-
-  intro.classList.add("hidden");
-  quiz.classList.remove("hidden");
-  results.classList.add("hidden");
-
+$("startBtn").onclick = () => {
+  $("intro").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  $("results").classList.add("hidden");
+  current = 0;
+  selections = Array(questions.length).fill(null);
   renderQuestion();
-}
+};
 
-function renderQuestion() {
-  const q = QUESTIONS[currentQuestion];
+$("prevBtn").onclick = () => {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+};
 
-  progressText.textContent =
-    `Situation ${currentQuestion + 1} sur ${QUESTIONS.length}`;
-
-  progressBar.style.width =
-    `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
-
-  questionTitle.textContent = "";
-
-  questionText.textContent = q.question;
-
-  answersBox.innerHTML = q.answers.map((answer, index) => `
-    <label class="answer">
-      <input type="radio" name="answer" value="${index}" ${answers[q.id] === index ? "checked" : ""}>
-      <span>${answer.text}</span>
-    </label>
-  `).join("");
-
-  document.querySelectorAll("input[name='answer']").forEach(input => {
-    input.addEventListener("change", event => {
-      answers[q.id] = Number(event.target.value);
-    });
-  });
-
-  prevBtn.disabled = currentQuestion === 0;
-  nextBtn.textContent = currentQuestion === QUESTIONS.length - 1 ? "Voir les résultats" : "Suivant";
-}
-
-function nextQuestion() {
-  const q = QUESTIONS[currentQuestion];
-
-  if (answers[q.id] === undefined) {
-    alert("Veuillez choisir une réponse avant de continuer.");
+$("nextBtn").onclick = () => {
+  if (selections[current] === null) {
+    alert("Veuillez choisir la posture qui correspond le mieux à votre réaction spontanée.");
     return;
   }
 
-  if (currentQuestion < QUESTIONS.length - 1) {
-    currentQuestion++;
+  if (current < questions.length - 1) {
+    current++;
     renderQuestion();
   } else {
     showResults();
   }
-}
+};
 
-function previousQuestion() {
-  if (currentQuestion > 0) {
-    currentQuestion--;
-    renderQuestion();
+$("restartBtn").onclick = () => location.reload();
+$("pdfBtn").onclick = exportPDF;
+$("csvBtn").onclick = exportCSV;
+$("jsonBtn").onclick = exportJSON;
+
+function renderQuestion() {
+  const q = questions[current];
+
+  $("progressText").textContent = `Situation ${current + 1} sur ${questions.length}`;
+  $("questionTitle").textContent = "";
+  $("questionText").textContent = q.text;
+  $("progressBar").style.width = `${((current + 1) / questions.length) * 100}%`;
+
+  if (!displayedAnswers[current]) {
+    displayedAnswers[current] = shuffleAnswers(q.answers);
   }
+
+  $("answers").innerHTML = "";
+
+  displayedAnswers[current].forEach((answer, displayedIndex) => {
+    const selectedOriginalIndex = selections[current];
+
+    const div = document.createElement("div");
+    div.className =
+      "answer" +
+      (selectedOriginalIndex === answer.originalIndex ? " selected" : "");
+
+    div.innerHTML = `
+      <span>${answer.text}</span>
+    `;
+
+    div.onclick = () => {
+      selections[current] = answer.originalIndex;
+      renderQuestion();
+    };
+
+    $("answers").appendChild(div);
+  });
+
+  $("prevBtn").disabled = current === 0;
+  $("nextBtn").textContent =
+    current === questions.length - 1 ? "Voir mon profil" : "Suivant";
 }
 
-function calculateScores() {
-  const rawScores = { C: 0, CM: 0, CT: 0, CG: 0, QP: 0 };
-  const maxScores = { C: 0, CM: 0, CT: 0, CG: 0, QP: 0 };
+function shuffleAnswers(answers) {
+  const copy = answers.map((answer, index) => ({
+    ...answer,
+    originalIndex: index
+  }));
 
-  QUESTIONS.forEach(q => {
-    const selectedAnswer = q.answers[answers[q.id]];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
 
-    Object.keys(AXES).forEach(axis => {
-      const maxForQuestion = Math.max(...q.answers.map(a => a.score?.[axis] || 0));
-      maxScores[axis] += maxForQuestion;
-      rawScores[axis] += selectedAnswer?.score?.[axis] || 0;
+  return copy;
+}
+
+function computeProfile() {
+  const competenceRaw = {};
+  const domainRaw = {};
+
+  Object.values(REFERENTIEL).forEach(domain => {
+    domain.refs.forEach(ref => {
+      competenceRaw[ref] = 0;
     });
   });
 
-  const percentages = {};
-
-  Object.keys(AXES).forEach(axis => {
-    percentages[axis] = maxScores[axis]
-      ? Math.round((rawScores[axis] / maxScores[axis]) * 100)
-      : 0;
+  Object.keys(REFERENTIEL).forEach(domainKey => {
+    domainRaw[domainKey] = 0;
   });
 
-  return percentages;
+  questions.forEach((q, index) => {
+    const selectedIndex = selections[index];
+
+    if (selectedIndex === null) return;
+
+    const selectedAnswer = q.answers[selectedIndex];
+    const score = selectedAnswer.score || {};
+
+    Object.entries(score).forEach(([competence, value]) => {
+      if (competenceRaw[competence] !== undefined) {
+        competenceRaw[competence] += value;
+      }
+    });
+  });
+
+  Object.entries(REFERENTIEL).forEach(([domainKey, domain]) => {
+    domainRaw[domainKey] = domain.refs.reduce((sum, ref) => {
+      return sum + (competenceRaw[ref] || 0);
+    }, 0);
+  });
+
+  const total = Object.values(domainRaw).reduce((sum, value) => sum + value, 0);
+
+  const domainPercentages = {};
+
+  Object.keys(domainRaw).forEach(domainKey => {
+    domainPercentages[domainKey] =
+      total > 0 ? Math.round((domainRaw[domainKey] / total) * 100) : 0;
+  });
+
+  const competenceTotal = Object.values(competenceRaw).reduce(
+    (sum, value) => sum + value,
+    0
+  );
+
+  const competencePercentages = {};
+
+  Object.keys(competenceRaw).forEach(ref => {
+    competencePercentages[ref] =
+      competenceTotal > 0
+        ? Math.round((competenceRaw[ref] / competenceTotal) * 100)
+        : 0;
+  });
+
+  return {
+    domainRaw,
+    domainPercentages,
+    competenceRaw,
+    competencePercentages
+  };
 }
 
 function showResults() {
-  quiz.classList.add("hidden");
-  results.classList.remove("hidden");
+  $("quiz").classList.add("hidden");
+  $("results").classList.remove("hidden");
 
-  const scores = calculateScores();
-  const average = Math.round(
-    Object.values(scores).reduce((a, b) => a + b, 0) / Object.keys(scores).length
-  );
+  const profile = computeProfile();
 
-  globalScore.textContent = average;
-  profileTitle.textContent = "Profil de positionnement DSI-DSIN";
-  profileSummary.textContent =
-    "Ce résultat constitue une aide à la lecture de votre positionnement professionnel. Il ne s’agit pas d’une évaluation certificative.";
+  const sortedDomains = Object.entries(profile.domainPercentages)
+    .sort((a, b) => b[1] - a[1]);
 
-  renderRadar(scores);
-  renderDetails(scores);
-  renderRecommendations(scores);
+  const dominant = sortedDomains[0];
+  const secondary = sortedDomains[1];
+
+  $("globalScore").textContent = "";
+  document.querySelector(".score-badge").innerHTML = `
+    <span>${dominant[1]}</span>%
+    <small>${REFERENTIEL[dominant[0]].label}</small>
+  `;
+
+  $("profileTitle").textContent = "Profil de mobilisation du référentiel";
+
+  $("profileSummary").textContent =
+    `Vos choix mobilisent principalement le domaine « ${REFERENTIEL[dominant[0]].label} »` +
+    (secondary ? `, puis le domaine « ${REFERENTIEL[secondary[0]].label} ». ` : ". ") +
+    "Ce résultat ne constitue pas une note : il décrit les familles de compétences que vous activez spontanément dans les situations proposées.";
+
+  drawRadar(profile.domainPercentages);
+  renderDetails(profile);
+  renderRecommendations(profile);
 }
 
-function renderRadar(scores) {
-  const canvas = document.getElementById("radarChart");
+function drawRadar(percentages) {
+  const ctx = $("radarChart");
 
-  if (radarChart) {
-    radarChart.destroy();
-  }
+  if (chart) chart.destroy();
 
-  radarChart = new Chart(canvas, {
+  chart = new Chart(ctx, {
     type: "radar",
     data: {
-      labels: Object.values(AXES),
-      datasets: [{
-        label: "Positionnement DSI-DSIN",
-        data: Object.keys(AXES).map(axis => scores[axis]),
-        fill: true
-      }]
+      labels: Object.keys(REFERENTIEL).map(key => REFERENTIEL[key].label),
+      datasets: [
+        {
+          label: "Mobilisation du référentiel (%)",
+          data: Object.keys(REFERENTIEL).map(key => percentages[key]),
+          fill: true
+        }
+      ]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       scales: {
         r: {
-          min: 0,
+          beginAtZero: true,
           max: 100,
           ticks: {
             stepSize: 20
           }
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
         }
       }
     }
   });
 }
 
-function renderDetails(scores) {
-  axisDetails.innerHTML = Object.keys(AXES_DESCRIPTIONS).map(axis => `
-    <div class="axis-card">
-      <h4>${AXES_DESCRIPTIONS[axis].title} — ${AXES_DESCRIPTIONS[axis].referentiel}</h4>
-      <p><strong>Score : ${scores[axis]}%</strong></p>
-      <p>${AXES_DESCRIPTIONS[axis].description}</p>
-    </div>
-  `).join("");
+function renderDetails(profile) {
+  $("axisDetails").innerHTML = "";
+
+  Object.entries(REFERENTIEL).forEach(([domainKey, domain]) => {
+    const div = document.createElement("div");
+    div.className = "axis-card";
+
+    const topCompetences = domain.refs
+      .map(ref => ({
+        ref,
+        label: COMPETENCE_LABELS[ref] || ref,
+        raw: profile.competenceRaw[ref] || 0
+      }))
+      .sort((a, b) => b.raw - a.raw)
+      .slice(0, 3);
+
+    div.innerHTML = `
+      <strong>${domain.label}</strong>
+      <div class="meter">
+        <span style="width:${profile.domainPercentages[domainKey]}%"></span>
+      </div>
+      <p>${profile.domainPercentages[domainKey]}% de vos choix mobilisent ce domaine.</p>
+      <p><small>${domain.refs.join(", ")}</small></p>
+      <p><strong>Compétences les plus mobilisées :</strong></p>
+      <ul>
+        ${topCompetences
+          .map(c => `<li>${c.ref} — ${c.label}</li>`)
+          .join("")}
+      </ul>
+    `;
+
+    $("axisDetails").appendChild(div);
+  });
 }
 
-function renderRecommendations(scores) {
-  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  const strongest = sorted[0];
-  const weakest = sorted[sorted.length - 1];
+function renderRecommendations(profile) {
+  const sortedDomains = Object.entries(profile.domainPercentages)
+    .sort((a, b) => b[1] - a[1]);
 
-  recommendations.innerHTML = `
-    <div class="recommendation">
-      <h3>Point d’appui principal</h3>
-      <p><strong>${AXES[strongest[0]]}</strong> : ${strongest[1]}%</p>
-    </div>
+  const dominant = sortedDomains.slice(0, 2);
+  const lessMobilized = sortedDomains.slice(-2).reverse();
 
-    <div class="recommendation">
-      <h3>Axe prioritaire de développement</h3>
-      <p><strong>${AXES[weakest[0]]}</strong> : ${weakest[1]}%</p>
-    </div>
+  const sortedCompetences = Object.entries(profile.competenceRaw)
+    .sort((a, b) => b[1] - a[1]);
 
-    <div class="recommendation">
-      <h3>Usage conseillé</h3>
+  const topCompetences = sortedCompetences.slice(0, 5);
+  const lowCompetences = sortedCompetences
+    .filter(([, value]) => value === 0)
+    .slice(0, 5);
+
+  $("recommendations").innerHTML = `
+    <h3>Lecture du profil</h3>
+
+    <div class="rec">
+      <strong>Domaines les plus mobilisés</strong>
       <p>
-        Utilisez ces résultats pour objectiver un positionnement
-        et construire un parcours de formation adapté.
+        ${dominant
+          .map(([key, value]) => `${REFERENTIEL[key].label} (${value}%)`)
+          .join(" · ")}
+      </p>
+    </div>
+
+    <div class="rec">
+      <strong>Domaines moins mobilisés</strong>
+      <p>
+        ${lessMobilized
+          .map(([key, value]) => `${REFERENTIEL[key].label} (${value}%)`)
+          .join(" · ")}
+      </p>
+    </div>
+
+    <div class="rec">
+      <strong>Compétences fines les plus présentes dans vos choix</strong>
+      <p>
+        ${topCompetences
+          .map(([ref]) => `${ref} — ${COMPETENCE_LABELS[ref] || ref}`)
+          .join("<br>")}
+      </p>
+    </div>
+
+    <div class="rec">
+      <strong>Compétences à réinvestir dans un parcours de formation</strong>
+      <p>
+        ${
+          lowCompetences.length > 0
+            ? lowCompetences
+                .map(([ref]) => `${ref} — ${COMPETENCE_LABELS[ref] || ref}`)
+                .join("<br>")
+            : "Toutes les familles de compétences du référentiel apparaissent dans vos réponses."
+        }
       </p>
     </div>
   `;
 }
 
-function getResultsPayload() {
-  const scores = calculateScores();
+function resultObject() {
+  const profile = computeProfile();
 
   return {
     date: new Date().toISOString(),
-    referentiel: "DSI-DSIN",
-    source: "https://services.dgesip.fr/fichiers/referentiel_livret_DSI-DSIN.PDF",
-    scores,
-    answers: QUESTIONS.map(q => {
-      const selectedIndex = answers[q.id];
-      const selectedAnswer = q.answers[selectedIndex];
-
-      return {
-        id: q.id,
-        competence: q.competence,
-        domaine: q.domaine,
-        question: q.question,
-        answer: selectedAnswer ? selectedAnswer.text : null,
-        score: selectedAnswer ? selectedAnswer.score : null
-      };
-    })
+    name: $("userName").value,
+    context: $("userContext").value,
+    interpretation:
+      "Profil de mobilisation du référentiel DSI-DSIN. Les résultats ne constituent pas une note.",
+    domains: profile.domainPercentages,
+    competences: profile.competenceRaw,
+    answers: selections.map((selectedIndex, index) => ({
+      situation: questions[index].title || `Situation ${index + 1}`,
+      text: questions[index].text,
+      selectedAnswer:
+        selectedIndex !== null ? questions[index].answers[selectedIndex].text : null,
+      score:
+        selectedIndex !== null ? questions[index].answers[selectedIndex].score : null
+    }))
   };
 }
 
 function exportJSON() {
-  const blob = new Blob([JSON.stringify(getResultsPayload(), null, 2)], {
-    type: "application/json"
-  });
-
-  downloadBlob(blob, "positionnement-dsi-dsin.json");
+  download(
+    "profil-mobilisation-dsi-dsin.json",
+    JSON.stringify(resultObject(), null, 2),
+    "application/json"
+  );
 }
 
 function exportCSV() {
-  const scores = calculateScores();
+  const profile = computeProfile();
 
-  let csv = "Domaine;Référentiel;Score;Description\n";
+  let csv = "Domaine;Pourcentage\n";
 
-  Object.keys(AXES_DESCRIPTIONS).forEach(axis => {
-    csv += [
-      AXES_DESCRIPTIONS[axis].title,
-      AXES_DESCRIPTIONS[axis].referentiel,
-      `${scores[axis]}%`,
-      AXES_DESCRIPTIONS[axis].description
-    ].map(v => `"${String(v).replaceAll('"', '""')}"`).join(";") + "\n";
+  Object.entries(profile.domainPercentages).forEach(([key, value]) => {
+    csv += `"${REFERENTIEL[key].label}";"${value}%"\n`;
   });
 
-  const blob = new Blob([csv], {
-    type: "text/csv;charset=utf-8"
+  csv += "\nCompétence;Libellé;Points\n";
+
+  Object.entries(profile.competenceRaw).forEach(([ref, value]) => {
+    csv += `"${ref}";"${COMPETENCE_LABELS[ref] || ref}";"${value}"\n`;
   });
 
-  downloadBlob(blob, "positionnement-dsi-dsin.csv");
+  download("profil-mobilisation-dsi-dsin.csv", csv, "text/csv;charset=utf-8");
 }
 
 function exportPDF() {
-  window.print();
+  const { jsPDF } = window.jspdf;
+  const profile = computeProfile();
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text("Profil de mobilisation DSI-DSIN ESR", 14, 18);
+
+  doc.setFontSize(10);
+  doc.text(`Nom : ${$("userName").value || "-"}`, 14, 28);
+  doc.text(`Contexte : ${$("userContext").value || "-"}`, 14, 36);
+
+  doc.text("Ce résultat décrit les compétences du référentiel mobilisées dans vos choix.", 14, 48);
+  doc.text("Il ne constitue pas une note ni une certification.", 14, 56);
+
+  let y = 70;
+
+  Object.entries(profile.domainPercentages).forEach(([key, value]) => {
+    doc.text(`${REFERENTIEL[key].label} : ${value}%`, 14, y);
+    y += 8;
+  });
+
+  y += 6;
+  doc.text("Compétences les plus mobilisées :", 14, y);
+  y += 8;
+
+  Object.entries(profile.competenceRaw)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .forEach(([ref, value]) => {
+      doc.text(`${ref} — ${COMPETENCE_LABELS[ref] || ref} : ${value}`, 14, y);
+      y += 7;
+    });
+
+  doc.save("profil-mobilisation-dsi-dsin.pdf");
 }
 
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+function download(name, content, type) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([content], { type }));
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
