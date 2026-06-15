@@ -113,21 +113,22 @@ function renderQuestion() {
 
   $("answers").innerHTML = "";
 
-  displayedAnswers[current].forEach((answer, displayedIndex) => {
-    const selectedOriginalIndex = selections[current];
-
+  displayedAnswers[current].forEach(answer => {
     const div = document.createElement("div");
+
     div.className =
-      "answer" +
-      (selectedOriginalIndex === answer.originalIndex ? " selected" : "");
+      "answer" + (selections[current] === answer.originalIndex ? " selected" : "");
 
-    div.innerHTML = `
-      <span>${answer.text}</span>
-    `;
+    div.textContent = answer.text;
 
-    div.onclick = () => {
+    div.onclick = function () {
       selections[current] = answer.originalIndex;
-      renderQuestion();
+
+      document.querySelectorAll(".answer").forEach(el => {
+        el.classList.remove("selected");
+      });
+
+      div.classList.add("selected");
     };
 
     $("answers").appendChild(div);
